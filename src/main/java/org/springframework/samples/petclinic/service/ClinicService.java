@@ -49,4 +49,6 @@ public interface ClinicService {
 
 	Collection<Visit> findVisitsByPetId(int petId);
 
+	Collection<Owner> searchOwnersWithFilters(String lastName, String city, String telephone, Boolean hasPet);
+
 }

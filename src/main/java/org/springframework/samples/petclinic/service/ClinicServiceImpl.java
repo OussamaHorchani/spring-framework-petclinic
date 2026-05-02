@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.springframework.cache.annotation.Cacheable;
@@ -107,5 +108,69 @@ public class ClinicServiceImpl implements ClinicService {
 		return visitRepository.findByPetId(petId);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public Collection<Owner> searchOwnersWithFilters(String lastName, String city, String telephone, Boolean hasPet) {
+		// Fetch the full owner population by doing a wide last-name match.
+		Collection<Owner> allOwners = ownerRepository.findByLastName("");
+		Collection<Owner> results = new ArrayList<>();
+
+		for (Owner owner : allOwners) {
+			boolean matches = true;
+
+			if (lastName != null && !lastName.isEmpty()) {
+				if (owner.getLastName() == null) {
+					matches = false;
+				} else {
+					if (!owner.getLastName().toLowerCase().contains(lastName.toLowerCase())) {
+						matches = false;
+					}
+				}
+			}
+
+			if (matches && city != null && !city.isEmpty()) {
+				if (owner.getCity() == null) {
+					matches = false;
+				} else {
+					if (!owner.getCity().toLowerCase().contains(city.toLowerCase())) {
+						matches = false;
+					}
+				}
+			}
+
+			if (matches && telephone != null && !telephone.isEmpty()) {
+				if (owner.getTelephone() == null) {
+					matches = false;
+				} else {
+					String stripped = telephone.replaceAll("[^0-9]", "");
+					if (stripped.isEmpty()) {
+						matches = false;
+					} else {
+						if (!owner.getTelephone().contains(stripped)) {
+							matches = false;
+						}
+					}
+				}
+			}
+
+			if (matches && hasPet != null) {
+				if (hasPet.booleanValue()) {
+					if (owner.getPets() == null || owner.getPets().isEmpty()) {
+						matches = false;
+					}
+				} else {
+					if (owner.getPets() != null && !owner.getPets().isEmpty()) {
+						matches = false;
+					}
+				}
+			}
+
+			if (matches) {
+				results.add(owner);
+			}
+		}
+
+		return results;
+	}
 
 }
