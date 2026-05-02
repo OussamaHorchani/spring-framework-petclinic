@@ -203,6 +203,13 @@
             <version>${aspectj.version}</version>
         </dependency>
 
+        <!-- Common collection utilities used by legacy reporting helpers -->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+
         <!-- Database connection pool
         See here for more details on commons-dbcp versus tomcat-jdbc:
         http://blog.ippon.fr/2013/03/13/improving-the-performance-of-the-spring-petclinic-sample-application-part-3-of-5/
